@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Una red conectada bajo el océano</title>
+  <desc id="desc">Ilustración conceptual de tres estaciones costeras conectadas por una red de fibra óptica sobre el fondo marino. Pulsos de luz recorren el cable principal y una bifurcación, entre repetidores y nodos de conexión.</desc>
+  <defs>
+    <linearGradient id="surface" x1="310" y1="80" x2="540" y2="315" gradientUnits="userSpaceOnUse"><stop stop-color="#41c6c3" stop-opacity=".65"/><stop offset="1" stop-color="#2196ac" stop-opacity=".32"/></linearGradient>
+    <linearGradient id="front" x1="380" y1="210" x2="330" y2="420" gradientUnits="userSpaceOnUse"><stop stop-color="#1597ac" stop-opacity=".6"/><stop offset="1" stop-color="#092f4b" stop-opacity=".94"/></linearGradient>
+    <linearGradient id="side" x1="810" y1="230" x2="610" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#198a9f" stop-opacity=".64"/><stop offset="1" stop-color="#06344d" stop-opacity=".96"/></linearGradient>
+    <linearGradient id="land" x1="90" y1="130" x2="800" y2="260" gradientUnits="userSpaceOnUse"><stop stop-color="#b6d9ce"/><stop offset="1" stop-color="#69b1b0"/></linearGradient>
+    <linearGradient id="bed" x1="130" y1="300" x2="520" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#3a8d9b"/><stop offset="1" stop-color="#164d68"/></linearGradient>
+    <linearGradient id="fiber" x1="150" y1="225" x2="750" y2="275" gradientUnits="userSpaceOnUse"><stop stop-color="#65e1d1"/><stop offset=".52" stop-color="#c1fff1"/><stop offset="1" stop-color="#58d7db"/></linearGradient>
+    <radialGradient id="aura"><stop stop-color="#3ad4cc" stop-opacity=".22"/><stop offset="1" stop-color="#3ad4cc" stop-opacity="0"/></radialGradient>
+    <filter id="soft" x="-40%" y="-100%" width="180%" height="300%"><feGaussianBlur stdDeviation="12"/></filter>
+    <filter id="light" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="3"/></filter>
+    <path id="route" d="M155 209 C164 225 174 242 190 262 C207 282 221 305 253 313 C303 324 324 328 371 341 C421 355 475 359 513 375 C542 387 568 393 591 381 C633 359 656 329 682 300 C702 278 729 256 754 244"/>
+    <path id="branch" d="M446.5 357.25 C410 337 379 311 355 281 C330 250 315 214 324 185 C329 168 341 151 338 133"/>
+    <clipPath id="frontClip"><path d="M70 170 575 320 575 455 70 305Z"/></clipPath>
+  </defs>
+  <style>
+    .signal{stroke-dasharray:3 97;animation:transmit 7s linear infinite}
+    .signal-delay{animation-delay:-3.5s}
+    .signal-branch{animation-duration:8s;animation-delay:-2s}
+    .beacon{transform-box:fill-box;transform-origin:center;animation:beacon 4.5s ease-out infinite}
+    .beacon-delay{animation-delay:-2.25s}
+    .beacon-third{animation-delay:-1.5s}
+    .surface-shimmer{animation:shimmer 7s ease-in-out infinite alternate}
+    @keyframes transmit{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+    @keyframes beacon{0%{opacity:.65;transform:scale(.7)}80%,100%{opacity:0;transform:scale(1.8)}}
+    @keyframes shimmer{from{opacity:.28}to{opacity:.7}}
+    @media(prefers-reduced-motion:reduce){.signal,.beacon,.surface-shimmer{animation:none}.signal{display:none}.beacon{opacity:.25}}
+  </style>
+
+                                                                               
+  <ellipse cx="459" cy="354" rx="405" ry="144" fill="url(#aura)"/>
+  <path d="m87 333 477 143 282-112-470-139Z" fill="#031f34" opacity=".25" filter="url(#soft)"/>
+
+                                                                           
+  <path d="m70 170 505 150v135L70 305Z" fill="url(#front)" stroke="#70cfce" stroke-opacity=".22"/>
+  <path d="m575 320 260-105v135L575 455Z" fill="url(#side)" stroke="#70cfce" stroke-opacity=".22"/>
+  <path d="m70 170 260-105 505 150-260 105Z" fill="url(#surface)" stroke="#a5ece2" stroke-opacity=".48"/>
+
+                                                                 
+  <g clip-path="url(#frontClip)" fill="#85eee1" opacity=".065">
+    <path d="m191 192 39 12-72 197-27-17Z"/>
+    <path d="m287 225 15 4-40 164-34-7Z"/>
+    <path d="m437 258 48 15-37 150-75-23Z"/>
+  </g>
+
+                                                                               
+  <path d="m70 264 70 10 81 32 66 6 72 27 86 18 58 8 72 33v57L70 305Z" fill="url(#bed)" opacity=".84"/>
+  <path d="m575 398 40-29 43-24 39-47 62-43 76-16v111L575 455Z" fill="#276f83" opacity=".67"/>
+  <path d="m70 286 103 22 82 33 72 7 88 29 78 18 82 32 57-31 48-35 61-45 94-39" stroke="#86c5c5" stroke-opacity=".15"/>
+  <path d="m71 298 124 33 58 23 90 20 79 20 79 20 74 27 75-38 74-59 60-33 51-18" stroke="#86c5c5" stroke-opacity=".1"/>
+
+                           
+  <path d="m70 170 260-105 88 26-41 15-23 25-47 13-30 23-65 20-37 15Z" fill="url(#land)" stroke="#c4eee0" stroke-opacity=".45"/>
+  <path d="m70 170 105 32 37-15-8 15-31 13-103-30Z" fill="#468e96"/>
+  <path d="m745 188 90 27-260 105-91-27 48-24 51-13 36-25 65-18Z" fill="url(#land)" stroke="#c4eee0" stroke-opacity=".4"/>
+  <path d="m484 293 91 27 260-105v15L575 335l-91-27Z" fill="#448f98"/>
+  <path d="m213 187 62-20 30-23 47-13 24-25 42-15M485 293l49-24 49-13 36-25 65-18 61-25" stroke="#d8fff0" stroke-width="2" stroke-opacity=".65"/>
+
+                                                                
+  <g class="surface-shimmer" stroke="#b6f7eb" stroke-width="1.5" stroke-linecap="round">
+    <path d="m343 146 54 16m19 5 22 7m-161-2 62 18m119-37 47 14m-140 41 63 18m24-23 42 13m47-6 51 15m-134 24 41 12m94-35 32 10"/>
+  </g>
+  <g stroke="#a8e9df" stroke-opacity=".13"><path d="m260 212 172-70m-91 94 172-70m-94 94 172-70m-93 94 171-70"/></g>
+
+                                                                                 
+  <use href="#branch" stroke="#05293d" stroke-width="8" stroke-linecap="round"/>
+  <use href="#branch" stroke="#43d5cf" stroke-width="7" opacity=".18" filter="url(#light)"/>
+  <use href="#branch" stroke="url(#fiber)" stroke-width="3" stroke-linecap="round"/>
+  <path class="signal signal-branch" pathLength="100" d="M446.5 357.25 C410 337 379 311 355 281 C330 250 315 214 324 185 C329 168 341 151 338 133" stroke="#eafff7" stroke-width="4" stroke-linecap="round"/>
+  <use href="#route" stroke="#05293d" stroke-width="11" stroke-linecap="round"/>
+  <use href="#route" stroke="#43d5cf" stroke-width="9" opacity=".23" filter="url(#light)"/>
+  <use href="#route" stroke="url(#fiber)" stroke-width="4" stroke-linecap="round"/>
+  <path class="signal" pathLength="100" d="M155 209 C164 225 174 242 190 262 C207 282 221 305 253 313 C303 324 324 328 371 341 C421 355 475 359 513 375 C542 387 568 393 591 381 C633 359 656 329 682 300 C702 278 729 256 754 244" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <path class="signal signal-delay" pathLength="100" d="M155 209 C164 225 174 242 190 262 C207 282 221 305 253 313 C303 324 324 328 371 341 C421 355 475 359 513 375 C542 387 568 393 591 381 C633 359 656 329 682 300 C702 278 729 256 754 244" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <g transform="translate(362 338) rotate(17)"><rect x="-12" y="-6" width="24" height="12" rx="5" fill="#c2e8dc" stroke="#07384b" stroke-width="2"/><path d="M-4-5V5M4-5V5" stroke="#267282" stroke-width="2"/></g>
+  <g transform="translate(652 333) rotate(-47)"><rect x="-12" y="-6" width="24" height="12" rx="5" fill="#c2e8dc" stroke="#07384b" stroke-width="2"/><path d="M-4-5V5M4-5V5" stroke="#267282" stroke-width="2"/></g>
+
+                                                                        
+  <g transform="translate(446.5 357.25) rotate(12)">
+    <rect x="-12" y="-8" width="24" height="16" rx="6" fill="#d3f1e7" stroke="#07384b" stroke-width="2"/>
+    <path d="M-7 0H7M0 0-5-5" stroke="#28798b" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(355 281) rotate(52)"><rect x="-10" y="-5" width="20" height="10" rx="4" fill="#b7ddd6" stroke="#07384b" stroke-width="1.8"/><path d="M-3-4V4M3-4V4" stroke="#267282" stroke-width="1.7"/></g>
+
+                                                          
+  <path d="M326 109 C329 118 337 124 338 133" stroke="#bbf7e7" stroke-width="2.5"/>
+  <g transform="translate(210 -9) scale(.7)">
+    <path d="m112 146 68-27 69 21-68 28Z" fill="#08364b" opacity=".25"/>
+    <path d="m121 123 57 17v36l-57-17Z" fill="#8cc4c3"/>
+    <path d="m178 140 44-18v36l-44 18Z" fill="#4e929f"/>
+    <path d="m121 123 44-18 57 17-44 18Z" fill="#dbf2e7" stroke="#e8fff6" stroke-opacity=".6"/>
+    <path d="m133 138 12 4v10l-12-4Zm20 6 12 4v10l-12-4Z" fill="#15465d"/>
+    <path d="m190 145 12-5v18l-12 5Z" fill="#123e55"/>
+    <path d="M170 117V87m0 7 16 5m-16-5-16 6" stroke="#c2eee2" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="170" cy="86" r="4" fill="#acffee"/>
+    <circle class="beacon beacon-third" cx="170" cy="86" r="13" stroke="#96f6df" stroke-width="1.5"/>
+  </g>
+
+                                          
+  <path d="m155 169-9 25 9 15" stroke="#bbf7e7" stroke-width="3"/>
+  <path d="m112 146 68-27 69 21-68 28Z" fill="#08364b" opacity=".25"/>
+  <path d="m121 123 57 17v36l-57-17Z" fill="#8cc4c3"/>
+  <path d="m178 140 44-18v36l-44 18Z" fill="#4e929f"/>
+  <path d="m121 123 44-18 57 17-44 18Z" fill="#dbf2e7" stroke="#e8fff6" stroke-opacity=".6"/>
+  <path d="m133 138 12 4v10l-12-4Zm20 6 12 4v10l-12-4Z" fill="#15465d"/>
+  <path d="m190 145 12-5v18l-12 5Z" fill="#123e55"/>
+  <path d="M170 117V87m0 7 16 5m-16-5-16 6" stroke="#c2eee2" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="170" cy="86" r="4" fill="#acffee"/>
+  <circle class="beacon" cx="170" cy="86" r="13" stroke="#96f6df" stroke-width="1.5"/>
+
+                                          
+  <path d="m745 223 9 21" stroke="#bbf7e7" stroke-width="3"/>
+  <path d="m677 201 66-28 71 22-64 28Z" fill="#08364b" opacity=".25"/>
+  <path d="m684 178 57 17v36l-57-17Z" fill="#9ad1cb"/>
+  <path d="m741 195 44-18v36l-44 18Z" fill="#5295a2"/>
+  <path d="m684 178 44-18 57 17-44 18Z" fill="#e0f4e9" stroke="#e8fff6" stroke-opacity=".6"/>
+  <path d="m696 193 12 4v10l-12-4Zm20 6 12 4v10l-12-4Z" fill="#15465d"/>
+  <path d="m753 200 12-5v18l-12 5Z" fill="#123e55"/>
+  <path d="M733 172v-30m0 7 16 5m-16-5-16 6" stroke="#c2eee2" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="733" cy="141" r="4" fill="#acffee"/>
+  <circle class="beacon beacon-delay" cx="733" cy="141" r="13" stroke="#96f6df" stroke-width="1.5"/>
+
+</svg>

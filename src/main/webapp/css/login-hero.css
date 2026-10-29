@@ -1,0 +1,75 @@
+body.olp-page .olp-brand {
+  background: radial-gradient(ellipse at 56% 69%, #126b79 0%, transparent 60%),
+    linear-gradient(155deg, #082f48 0%, #084b60 62%, #0a616d 100%) !important;
+}
+body.olp-page .olp-brand::before,
+body.olp-page .olp-brand::after,
+body.olp-page .olp-brand-glow { display: none !important; }
+
+body.olp-page .olp-brand-copy {
+  width: 100% !important;
+  margin-top: clamp(35px, 5.3vh, 64px) !important;
+}
+body.olp-page .olp-brand-copy h1 {
+  max-width: 640px !important;
+  font-size: clamp(36px, 3.2vw, 59px) !important;
+  line-height: 1.07 !important;
+}
+body.olp-page .olp-brand-copy p {
+  margin-top: 15px !important;
+  font-weight: 500 !important;
+}
+.olp-submarine-art {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px -3.5vw -12px;
+}
+.olp-submarine-art img {
+  display: block;
+  width: 100%;
+  max-width: 1020px;
+  height: auto;
+  max-height: 49vh;
+  object-fit: contain;
+}
+@media (min-width: 981px) and (max-height: 760px) {
+  body.olp-page .olp-brand-copy { margin-top: 25px !important; }
+  body.olp-page .olp-brand-copy h1 { font-size: clamp(32px, 3.1vw, 49px) !important; }
+  body.olp-page .olp-brand-copy p { font-size: 12.5px !important; margin-top: 10px !important; }
+  .olp-submarine-art { margin-top: 8px; }
+  .olp-submarine-art img { max-height: 43vh; }
+}
+@media (min-width: 681px) and (max-width: 980px) {
+  body.olp-page .olp-brand { min-height: 350px !important; }
+  body.olp-page .olp-brand-copy { width: 54% !important; padding-right: 0 !important; margin-top: 36px !important; }
+  body.olp-page .olp-brand-copy h1 { font-size: clamp(29px, 3.7vw, 36px) !important; }
+  body.olp-page .olp-brand-copy p { max-width: 290px !important; }
+  .olp-submarine-art { position: absolute; width: 52%; right: -12px; bottom: 16px; margin: 0; }
+  .olp-submarine-art img { max-height: none; }
+}
+@media (max-width: 680px) {
+  body.olp-page .olp-brand { min-height: 0 !important; padding-bottom: 8px !important; }
+  body.olp-page .olp-brand-copy { max-width: 100% !important; padding-right: 0 !important; margin-top: 23px !important; }
+  body.olp-page .olp-brand-copy h1 { max-width: 480px !important; font-size: clamp(25px, 5.5vw, 34px) !important; }
+  body.olp-page .olp-brand-copy p { max-width: 100% !important; font-size: 11.5px !important; margin-top: 10px !important; }
+  .olp-submarine-art { flex: none; margin: 2px -6px -3px; }
+  .olp-submarine-art img { width: min(100%, 440px); max-height: 210px; }
+}
+
+
+body.olp-page .olp-control{position:relative}
+body.olp-page .login-input-shell .login-inline-error[hidden]{display:none!important}
+body.olp-page .login-input-shell.has-error .login-inline-error{display:block!important;position:absolute!important;top:50%!important;left:58px!important;right:45px!important;bottom:auto!important;transform:translateY(-50%)!important;margin:0!important;padding:0!important;background:none!important;color:#ba342e!important;font-weight:400!important;white-space:normal!important;line-height:1.35!important;pointer-events:none}
+body.olp-page .login-input-shell.has-error .login-inline-error i{display:none!important}
+body.olp-page .login-input-shell.has-error .olp-control{border-color:#d34a43!important;border-width:1.5px!important;box-shadow:0 0 0 3px #d34a4315!important}
+body.olp-page .login-input-shell.has-error input::placeholder{color:transparent!important}
+body.olp-page .login-input-shell.has-error::after{display:none!important}
+@media(max-width:540px){body.olp-page .login-input-shell.has-error .login-inline-error{left:53px!important}}
+
+body.olp-page .login-input-shell.has-error input{caret-color:transparent!important}
+body.olp-page .login-input-shell.has-error input::selection{color:transparent!important;background:transparent!important}

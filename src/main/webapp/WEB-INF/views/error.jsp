@@ -1,0 +1,2 @@
+<%@ page pageEncoding="UTF-8" %>
+<%@ include file="cabecera.jspf" %><div class="page-heading"><h1>No se pudo cargar la información</h1></div><c:if test="${not empty error}"><p class="crud-message crud-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><c:out value="${error}"/></p></c:if><c:if test="${param.ok == '1'}"><p class="crud-message crud-success" role="status">Operación realizada correctamente.</p></c:if><a class="primary-button" href="${pageContext.request.contextPath}/inicio.jsp">Volver al inicio</a><%@ include file="pie.jspf" %>
