@@ -3,7 +3,7 @@ package pe.edu.pucp.oceanlink;
 import java.sql.*;
 import java.util.*;
 import java.math.BigDecimal;
-public final class CapacidadDAO {
+public final class CapacidadDAO extends DaoBase {
     private CapacidadDAO(){}
     public static void bloquearEstaciones(Connection c,long origen,long destino)throws SQLException{
         for(long id:new TreeSet<>(List.of(origen,destino))){try(PreparedStatement ps=c.prepareStatement("SELECT estado FROM estacion WHERE id_estacion=? FOR UPDATE")){ps.setLong(1,id);try(ResultSet rs=ps.executeQuery()){if(!rs.next()||rs.getInt(1)!=1)throw new IllegalArgumentException("Selecciona estaciones activas.");}}}
@@ -60,7 +60,7 @@ public final class CapacidadDAO {
     }
     public static Map<String,String> rutas(long origen,long destino)throws SQLException{
         Map<Long,List<long[]>> grafo=new HashMap<>();Map<Long,String> codigos=new HashMap<>();
-        try(Connection c=Conexion.abrir();PreparedStatement ps=c.prepareStatement("SELECT s.id_segmento,s.codigo_segmento,s.id_estacion_origen,s.id_estacion_destino FROM segmento s JOIN estacion a ON a.id_estacion=s.id_estacion_origen JOIN estacion b ON b.id_estacion=s.id_estacion_destino WHERE s.estado=1 AND a.estado=1 AND b.estado=1 ORDER BY s.id_segmento");ResultSet rs=ps.executeQuery()){while(rs.next()){long id=rs.getLong(1),a=rs.getLong(3),b=rs.getLong(4);codigos.put(id,rs.getString(2));grafo.computeIfAbsent(a,k->new ArrayList<>()).add(new long[]{b,id});grafo.computeIfAbsent(b,k->new ArrayList<>()).add(new long[]{a,id});}}
+        try(Connection c=obtenerConexion();PreparedStatement ps=c.prepareStatement("SELECT s.id_segmento,s.codigo_segmento,s.id_estacion_origen,s.id_estacion_destino FROM segmento s JOIN estacion a ON a.id_estacion=s.id_estacion_origen JOIN estacion b ON b.id_estacion=s.id_estacion_destino WHERE s.estado=1 AND a.estado=1 AND b.estado=1 ORDER BY s.id_segmento");ResultSet rs=ps.executeQuery()){while(rs.next()){long id=rs.getLong(1),a=rs.getLong(3),b=rs.getLong(4);codigos.put(id,rs.getString(2));grafo.computeIfAbsent(a,k->new ArrayList<>()).add(new long[]{b,id});grafo.computeIfAbsent(b,k->new ArrayList<>()).add(new long[]{a,id});}}
         Map<String,String> out=new LinkedHashMap<>();if(origen!=destino)caminar(origen,destino,grafo,codigos,new HashSet<>(Set.of(origen)),new ArrayList<>(),out);return out;
     }
     private static void caminar(long actual,long destino,Map<Long,List<long[]>> grafo,Map<Long,String> codigos,Set<Long> vistos,List<Long> ruta,Map<String,String> out){

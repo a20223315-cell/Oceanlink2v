@@ -2,8 +2,8 @@ package pe.edu.pucp.oceanlink;
 
 import java.sql.*;
 import java.util.*;
-public class CatalogoDAO {
-    private List<Opcion> opciones(String sql)throws SQLException{List<Opcion> out=new ArrayList<>();try(Connection c=Conexion.abrir();PreparedStatement ps=c.prepareStatement(sql);ResultSet rs=ps.executeQuery()){while(rs.next())out.add(new Opcion(rs.getLong(1),rs.getString(2)));}return out;}
+public class CatalogoDAO extends DaoBase {
+    private List<Opcion> opciones(String sql)throws SQLException{List<Opcion> out=new ArrayList<>();try(Connection c=obtenerConexion();PreparedStatement ps=c.prepareStatement(sql);ResultSet rs=ps.executeQuery()){while(rs.next())out.add(new Opcion(rs.getLong(1),rs.getString(2)));}return out;}
     public List<Opcion> paises()throws SQLException{return opciones("SELECT id_pais,CONCAT(codigo_pais,' · ',nombre) FROM pais WHERE codigo_pais IN ('PE','CL','CO','PA') ORDER BY nombre");}
     public List<Opcion> roles()throws SQLException{return opciones("SELECT id_rol,nombre FROM rol ORDER BY id_rol");}
     public List<Opcion> estaciones()throws SQLException{return opciones("SELECT id_estacion,CONCAT(codigo_estacion,' · ',nombre,IF(estado=0,' (Inactiva)','')) FROM estacion ORDER BY nombre");}

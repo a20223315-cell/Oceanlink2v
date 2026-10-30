@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-public class ClienteDAO {
+public class ClienteDAO extends DaoBase {
     private static final String CONSULTA="SELECT t.*,(SELECT COUNT(*) FROM servicio v JOIN solicitud_capacidad sol ON sol.id_solicitud=v.id_solicitud WHERE sol.id_cliente=t.id_cliente AND v.estado='ACTIVO') servicios FROM cliente t";
     private static final String FILTRO=" WHERE (t.codigo_cliente REGEXP ? OR t.razon_social REGEXP ?) AND (?='' OR CAST(t.estado AS CHAR)=?)";
     private Cliente leer(ResultSet rs)throws SQLException{
@@ -23,16 +23,16 @@ public class ClienteDAO {
 
     private String ordenar(String orden,String direccion){String columna=switch(Objects.toString(orden,"codigo")){case "codigo"->"CAST(SUBSTRING_INDEX(t.codigo_cliente,'-',-1) AS UNSIGNED)";case "nombre"->"t.razon_social";case "correo"->"t.correo";case "estado"->"t.estado";default->"CAST(SUBSTRING_INDEX(t.codigo_cliente,'-',-1) AS UNSIGNED)";};return columna+("desc".equals(direccion)?" DESC":" ASC")+", t.id_cliente ASC";}
     private void filtros(PreparedStatement ps,String q,String estado)throws SQLException{ps.setString(1,Busqueda.codigo(q));ps.setString(2,Busqueda.texto(q));ps.setString(3,estado);ps.setString(4,estado);}
-    public int contar(String q,String estado)throws SQLException{try(Connection c=Conexion.abrir();PreparedStatement ps=c.prepareStatement("SELECT COUNT(*) FROM cliente t"+FILTRO)){filtros(ps,q,estado);try(ResultSet rs=ps.executeQuery()){rs.next();return rs.getInt(1);}}}
+    public int contar(String q,String estado)throws SQLException{try(Connection c=obtenerConexion();PreparedStatement ps=c.prepareStatement("SELECT COUNT(*) FROM cliente t"+FILTRO)){filtros(ps,q,estado);try(ResultSet rs=ps.executeQuery()){rs.next();return rs.getInt(1);}}}
     public List<Cliente> listar(String q,String estado,int pagina,int tamano)throws SQLException{return listar(q,estado,pagina,tamano,"codigo","asc");}
-    public List<Cliente> listar(String q,String estado,int pagina,int tamano,String orden,String direccion)throws SQLException{List<Cliente> out=new ArrayList<>();try(Connection c=Conexion.abrir();PreparedStatement ps=c.prepareStatement(CONSULTA+FILTRO+" ORDER BY "+ordenar(orden,direccion)+" LIMIT ? OFFSET ?")){filtros(ps,q,estado);ps.setInt(5,tamano);ps.setLong(6,(long)(pagina-1)*tamano);try(ResultSet rs=ps.executeQuery()){while(rs.next())out.add(leer(rs));}}return out;}
-    public Cliente buscar(long id)throws SQLException{try(Connection c=Conexion.abrir()){return buscar(c,id);}}
+    public List<Cliente> listar(String q,String estado,int pagina,int tamano,String orden,String direccion)throws SQLException{List<Cliente> out=new ArrayList<>();try(Connection c=obtenerConexion();PreparedStatement ps=c.prepareStatement(CONSULTA+FILTRO+" ORDER BY "+ordenar(orden,direccion)+" LIMIT ? OFFSET ?")){filtros(ps,q,estado);ps.setInt(5,tamano);ps.setLong(6,(long)(pagina-1)*tamano);try(ResultSet rs=ps.executeQuery()){while(rs.next())out.add(leer(rs));}}return out;}
+    public Cliente buscar(long id)throws SQLException{try(Connection c=obtenerConexion()){return buscar(c,id);}}
     private Cliente buscar(Connection c,long id)throws SQLException{try(PreparedStatement ps=c.prepareStatement(CONSULTA+" WHERE t.id_cliente=?")){ps.setLong(1,id);try(ResultSet rs=ps.executeQuery()){return rs.next()?leer(rs):null;}}}
     private void bloquear(Connection c,long id)throws SQLException{try(PreparedStatement ps=c.prepareStatement("SELECT id_cliente FROM cliente WHERE id_cliente=? FOR UPDATE")){ps.setLong(1,id);try(ResultSet rs=ps.executeQuery()){if(!rs.next())throw new IllegalArgumentException("El registro ya no existe.");}}}
 
     public void guardar(Cliente e)throws SQLException{
         if(e.getTelefono()==null||e.getTelefono().isBlank())throw new IllegalArgumentException("El teléfono es obligatorio.");
-        try(Connection c=Conexion.abrir()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{
+        try(Connection c=obtenerConexion()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{
             long id=e.getId(); boolean nuevo=id==0; if(!nuevo)bloquear(c,e.getId());
             String telefono=java.util.Objects.toString(e.getTelefono(),"").trim();
             if(!telefono.isEmpty()){
@@ -53,6 +53,6 @@ public class ClienteDAO {
             c.commit();
         }catch(SQLException|RuntimeException ex){c.rollback();throw ex;}}
     }
-    public void eliminar(long id)throws SQLException{try(Connection c=Conexion.abrir()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{bloquear(c,id);try(PreparedStatement ps=c.prepareStatement("SELECT 1 FROM solicitud_capacidad r JOIN estado_solicitud_capacidad es ON es.id_estado_solicitud=r.id_estado_solicitud WHERE r.id_cliente=? AND es.nombre NOT IN ('RECHAZADA','ACTIVA') UNION ALL SELECT 1 FROM servicio s JOIN solicitud_capacidad r ON r.id_solicitud=s.id_solicitud WHERE r.id_cliente=? AND s.estado='ACTIVO' LIMIT 1")){ps.setLong(1,id);ps.setLong(2,id);try(ResultSet rs=ps.executeQuery()){if(rs.next())throw new IllegalArgumentException("El cliente tiene solicitudes pendientes o servicios activos.");}}try(PreparedStatement ps=c.prepareStatement("UPDATE cliente SET estado=0 WHERE id_cliente=?")){ps.setLong(1,id);ps.executeUpdate();}c.commit();}catch(SQLException|RuntimeException e){c.rollback();throw e;}}}
+    public void eliminar(long id)throws SQLException{try(Connection c=obtenerConexion()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{bloquear(c,id);try(PreparedStatement ps=c.prepareStatement("SELECT 1 FROM solicitud_capacidad r JOIN estado_solicitud_capacidad es ON es.id_estado_solicitud=r.id_estado_solicitud WHERE r.id_cliente=? AND es.nombre NOT IN ('RECHAZADA','ACTIVA') UNION ALL SELECT 1 FROM servicio s JOIN solicitud_capacidad r ON r.id_solicitud=s.id_solicitud WHERE r.id_cliente=? AND s.estado='ACTIVO' LIMIT 1")){ps.setLong(1,id);ps.setLong(2,id);try(ResultSet rs=ps.executeQuery()){if(rs.next())throw new IllegalArgumentException("El cliente tiene solicitudes pendientes o servicios activos.");}}try(PreparedStatement ps=c.prepareStatement("UPDATE cliente SET estado=0 WHERE id_cliente=?")){ps.setLong(1,id);ps.executeUpdate();}c.commit();}catch(SQLException|RuntimeException e){c.rollback();throw e;}}}
 
 }

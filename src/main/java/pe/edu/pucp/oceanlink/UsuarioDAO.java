@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-public class UsuarioDAO {
+public class UsuarioDAO extends DaoBase {
     private static final String CONSULTA="SELECT t.*,ro.nombre rol_nombre,pa.nombre pais_nombre FROM usuario t JOIN rol ro ON ro.id_rol=t.id_rol JOIN pais pa ON pa.id_pais=t.id_pais";
     private static final String FILTRO=" WHERE (t.codigo_usuario REGEXP ? OR CONCAT(t.nombre_completo,' ',t.correo) REGEXP ?) AND (?='' OR (CASE WHEN t.estado=0 AND t.fecha_primera_activacion IS NULL THEN 'pendiente' WHEN t.estado=0 THEN '0' ELSE '1' END)=?) AND (?='' OR CAST(t.id_rol AS CHAR)=?)";
     private Usuario leer(ResultSet rs)throws SQLException{
@@ -27,17 +27,17 @@ public class UsuarioDAO {
     private String ordenar(String orden,String direccion){String columna=switch((orden==null || orden.isBlank()?"nombre":orden)){case "codigo"->"CAST(SUBSTRING_INDEX(t.codigo_usuario,'-',-1) AS UNSIGNED)";case "nombre"->"CASE WHEN LOCATE(',',t.nombre_completo)>0 THEN t.nombre_completo WHEN LENGTH(t.nombre_completo)-LENGTH(REPLACE(t.nombre_completo,' ',''))=1 THEN CONCAT(SUBSTRING(t.nombre_completo,LOCATE(' ',t.nombre_completo)+1),', ',SUBSTRING_INDEX(t.nombre_completo,' ',1)) ELSE t.nombre_completo END";case "correo"->"t.correo";case "rol"->"ro.nombre";case "estado"->"t.estado";default->"CAST(SUBSTRING_INDEX(t.codigo_usuario,'-',-1) AS UNSIGNED)";};return columna+("desc".equals(direccion)?" DESC":" ASC")+", t.nombre_completo ASC, t.id_usuario ASC";}
     private void filtros(PreparedStatement ps,String q,String estado,String rol)throws SQLException{ps.setString(1,Busqueda.codigo(q));ps.setString(2,Busqueda.texto(q));ps.setString(3,estado);ps.setString(4,estado);ps.setString(5,rol);ps.setString(6,rol);}
     public int contar(String q,String estado)throws SQLException{return contar(q,estado,"");}
-    public int contar(String q,String estado,String rol)throws SQLException{try(Connection c=Conexion.abrir();PreparedStatement ps=c.prepareStatement("SELECT COUNT(*) FROM usuario t JOIN rol ro ON ro.id_rol=t.id_rol JOIN pais pa ON pa.id_pais=t.id_pais"+FILTRO)){filtros(ps,q,estado,rol);try(ResultSet rs=ps.executeQuery()){rs.next();return rs.getInt(1);}}}
+    public int contar(String q,String estado,String rol)throws SQLException{try(Connection c=obtenerConexion();PreparedStatement ps=c.prepareStatement("SELECT COUNT(*) FROM usuario t JOIN rol ro ON ro.id_rol=t.id_rol JOIN pais pa ON pa.id_pais=t.id_pais"+FILTRO)){filtros(ps,q,estado,rol);try(ResultSet rs=ps.executeQuery()){rs.next();return rs.getInt(1);}}}
     public List<Usuario> listar(String q,String estado,int pagina,int tamano)throws SQLException{return listar(q,estado,pagina,tamano,"codigo","asc","");}
-    public List<Usuario> listar(String q,String estado,int pagina,int tamano,String orden,String direccion,String rol)throws SQLException{List<Usuario> out=new ArrayList<>();try(Connection c=Conexion.abrir();PreparedStatement ps=c.prepareStatement(CONSULTA+FILTRO+" ORDER BY "+ordenar(orden,direccion)+" LIMIT ? OFFSET ?")){filtros(ps,q,estado,rol);ps.setInt(7,tamano);ps.setLong(8,(long)(pagina-1)*tamano);try(ResultSet rs=ps.executeQuery()){while(rs.next())out.add(leer(rs));}}return out;}
-    public Usuario buscar(long id)throws SQLException{try(Connection c=Conexion.abrir()){return buscar(c,id);}}
+    public List<Usuario> listar(String q,String estado,int pagina,int tamano,String orden,String direccion,String rol)throws SQLException{List<Usuario> out=new ArrayList<>();try(Connection c=obtenerConexion();PreparedStatement ps=c.prepareStatement(CONSULTA+FILTRO+" ORDER BY "+ordenar(orden,direccion)+" LIMIT ? OFFSET ?")){filtros(ps,q,estado,rol);ps.setInt(7,tamano);ps.setLong(8,(long)(pagina-1)*tamano);try(ResultSet rs=ps.executeQuery()){while(rs.next())out.add(leer(rs));}}return out;}
+    public Usuario buscar(long id)throws SQLException{try(Connection c=obtenerConexion()){return buscar(c,id);}}
     private Usuario buscar(Connection c,long id)throws SQLException{try(PreparedStatement ps=c.prepareStatement(CONSULTA+" WHERE t.id_usuario=?")){ps.setLong(1,id);try(ResultSet rs=ps.executeQuery()){return rs.next()?leer(rs):null;}}}
     private void bloquear(Connection c,long id)throws SQLException{try(PreparedStatement ps=c.prepareStatement("SELECT id_usuario FROM usuario WHERE id_usuario=? FOR UPDATE")){ps.setLong(1,id);try(ResultSet rs=ps.executeQuery()){if(!rs.next())throw new IllegalArgumentException("El registro ya no existe.");}}}
 
     public void guardar(Usuario e)throws SQLException{
         Paises.validarNombre(e.getNombres(),"nombres");Paises.validarNombre(e.getApellidos(),"apellidos");
         if(e.getTelefono()==null||e.getTelefono().isBlank())throw new IllegalArgumentException("El teléfono es obligatorio.");
-        try(Connection c=Conexion.abrir()){boolean correoBloqueado=false;c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{
+        try(Connection c=obtenerConexion()){boolean correoBloqueado=false;c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{
             try(PreparedStatement pais=c.prepareStatement("SELECT codigo_pais FROM pais WHERE id_pais=?")){pais.setLong(1,e.getPaisId());try(ResultSet r=pais.executeQuery()){if(!r.next()||!Set.of("PE","CL","CO","PA").contains(r.getString(1)))throw new IllegalArgumentException("Seleccione Perú, Chile, Colombia o Panamá.");}}
             long id=e.getId(); boolean nuevo=id==0; if(!nuevo)bloquear(c,e.getId());
             if(nuevo){
@@ -57,6 +57,6 @@ public class UsuarioDAO {
             c.commit();
         }catch(SQLException|RuntimeException ex){c.rollback();throw ex;}finally{if(correoBloqueado){try(Statement lock=c.createStatement()){lock.execute("SELECT RELEASE_LOCK('oceanlink.usuario.correo')");}}}}
     }
-    public void eliminar(long id)throws SQLException{try(Connection c=Conexion.abrir()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{bloquear(c,id);try(PreparedStatement ps=c.prepareStatement("UPDATE usuario SET estado=0 WHERE id_usuario=?")){ps.setLong(1,id);ps.executeUpdate();}c.commit();}catch(SQLException|RuntimeException e){c.rollback();throw e;}}}
+    public void eliminar(long id)throws SQLException{try(Connection c=obtenerConexion()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{bloquear(c,id);try(PreparedStatement ps=c.prepareStatement("UPDATE usuario SET estado=0 WHERE id_usuario=?")){ps.setLong(1,id);ps.executeUpdate();}c.commit();}catch(SQLException|RuntimeException e){c.rollback();throw e;}}}
 
 }

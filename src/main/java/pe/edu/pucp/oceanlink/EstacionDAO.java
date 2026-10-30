@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-public class EstacionDAO {
+public class EstacionDAO extends DaoBase {
     private static final String CONSULTA="SELECT t.*,pa.codigo_pais,pa.nombre pais_nombre FROM estacion t JOIN pais pa ON pa.id_pais=t.id_pais";
     private static final String FILTRO=" WHERE (t.codigo_estacion REGEXP ? OR t.nombre REGEXP ?) AND (?='' OR CAST(t.estado AS CHAR)=? OR t.condicion_operativa=?) AND (?=0 OR t.id_pais=?)";
     private Estacion leer(ResultSet rs)throws SQLException{
@@ -38,7 +38,7 @@ public class EstacionDAO {
 
     public int contar(String q, String estado, long paisId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM estacion t JOIN pais pa ON pa.id_pais=t.id_pais" + FILTRO;
-        try (Connection conn = Conexion.abrir();
+        try (Connection conn = obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             filtros(pstmt, q, estado, paisId);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -59,7 +59,7 @@ public class EstacionDAO {
     public List<Estacion> listar(String q, String estado, long paisId, int pagina, int tamano, String orden, String direccion) throws SQLException {
         ArrayList<Estacion> listaEstaciones = new ArrayList<>();
         String sql = CONSULTA + FILTRO + " ORDER BY " + ordenar(orden, direccion) + " LIMIT ? OFFSET ?";
-        try (Connection conn = Conexion.abrir();
+        try (Connection conn = obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             filtros(pstmt, q, estado, paisId);
             pstmt.setInt(8, tamano);
@@ -72,12 +72,12 @@ public class EstacionDAO {
         }
         return listaEstaciones;
     }
-    public Estacion buscar(long id)throws SQLException{try(Connection c=Conexion.abrir()){return buscar(c,id);}}
+    public Estacion buscar(long id)throws SQLException{try(Connection c=obtenerConexion()){return buscar(c,id);}}
     private Estacion buscar(Connection c,long id)throws SQLException{try(PreparedStatement ps=c.prepareStatement(CONSULTA+" WHERE t.id_estacion=?")){ps.setLong(1,id);try(ResultSet rs=ps.executeQuery()){return rs.next()?leer(rs):null;}}}
     private void bloquear(Connection c,long id)throws SQLException{try(PreparedStatement ps=c.prepareStatement("SELECT id_estacion FROM estacion WHERE id_estacion=? FOR UPDATE")){ps.setLong(1,id);try(ResultSet rs=ps.executeQuery()){if(!rs.next())throw new IllegalArgumentException("El registro ya no existe.");}}}
 
     public void guardar(Estacion e)throws SQLException{
-        try(Connection c=Conexion.abrir()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{
+        try(Connection c=obtenerConexion()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{
             long id=e.getId(); boolean nuevo=id==0; if(!nuevo)bloquear(c,e.getId());
             String codigoPais;try(PreparedStatement ps=c.prepareStatement("SELECT codigo_pais FROM pais WHERE id_pais=?")){ps.setLong(1,e.getPaisId());try(ResultSet rs=ps.executeQuery()){if(!rs.next())throw new IllegalArgumentException("País inválido.");codigoPais=rs.getString(1);}}
             if(!nuevo && e.getEstado()==0){try(PreparedStatement ps=c.prepareStatement("SELECT 1 FROM segmento WHERE estado=1 AND (id_estacion_origen=? OR id_estacion_destino=?) LIMIT 1")){ps.setLong(1,id);ps.setLong(2,id);try(ResultSet rs=ps.executeQuery()){if(rs.next())throw new IllegalArgumentException("Desactiva primero los segmentos asociados a esta estación.");}}try(PreparedStatement ps=c.prepareStatement("UPDATE estacion SET estado=0 WHERE id_estacion=?")){ps.setLong(1,id);ps.executeUpdate();}}
@@ -91,6 +91,6 @@ public class EstacionDAO {
             c.commit();
         }catch(SQLException|RuntimeException ex){c.rollback();throw ex;}}
     }
-    public void eliminar(long id)throws SQLException{try(Connection c=Conexion.abrir()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{bloquear(c,id);try(PreparedStatement ps=c.prepareStatement("SELECT 1 FROM segmento WHERE estado=1 AND (id_estacion_origen=? OR id_estacion_destino=?) LIMIT 1")){ps.setLong(1,id);ps.setLong(2,id);try(ResultSet rs=ps.executeQuery()){if(rs.next())throw new IllegalArgumentException("Desactiva primero los segmentos asociados a esta estación.");}}try(PreparedStatement ps=c.prepareStatement("UPDATE estacion SET estado=0 WHERE id_estacion=?")){ps.setLong(1,id);ps.executeUpdate();}c.commit();}catch(SQLException|RuntimeException e){c.rollback();throw e;}}}
+    public void eliminar(long id)throws SQLException{try(Connection c=obtenerConexion()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{bloquear(c,id);try(PreparedStatement ps=c.prepareStatement("SELECT 1 FROM segmento WHERE estado=1 AND (id_estacion_origen=? OR id_estacion_destino=?) LIMIT 1")){ps.setLong(1,id);ps.setLong(2,id);try(ResultSet rs=ps.executeQuery()){if(rs.next())throw new IllegalArgumentException("Desactiva primero los segmentos asociados a esta estación.");}}try(PreparedStatement ps=c.prepareStatement("UPDATE estacion SET estado=0 WHERE id_estacion=?")){ps.setLong(1,id);ps.executeUpdate();}c.commit();}catch(SQLException|RuntimeException e){c.rollback();throw e;}}}
 
 }
