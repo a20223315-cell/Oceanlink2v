@@ -73,3 +73,22 @@ body.olp-page .login-input-shell.has-error::after{display:none!important}
 
 body.olp-page .login-input-shell.has-error input{caret-color:transparent!important}
 body.olp-page .login-input-shell.has-error input::selection{color:transparent!important;background:transparent!important}
+
+
+/* Mensaje general devuelto por LoginServlet */
+#login-server-error {
+  display: block !important;
+  position: static !important;
+  transform: none !important;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 16px 0 0 !important;
+  padding: 12px 14px !important;
+  border: 1px solid #f1c3c0 !important;
+  border-radius: 8px !important;
+  background: #fff0ef !important;
+  color: #ba342e !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+}

@@ -30,6 +30,7 @@ public class Usuario {
     private int estado;
     private java.time.LocalDateTime fechaIngreso;
     private String rolNombre;
+    private String rolCodigo;
     private String paisNombre;
     public long getId(){return id;} public void setId(long v){id=v;}
     public String getCodigo(){return codigo;} public void setCodigo(String v){codigo=v;}
@@ -41,5 +42,6 @@ public class Usuario {
     public int getEstado(){return estado;} public void setEstado(int v){estado=v;}
     public java.time.LocalDateTime getFechaIngreso(){return fechaIngreso;} public void setFechaIngreso(java.time.LocalDateTime v){fechaIngreso=v;}
     public String getRolNombre(){return rolNombre;} public void setRolNombre(String v){rolNombre=v;}
+    public String getRolCodigo(){return rolCodigo;} public void setRolCodigo(String v){rolCodigo=v;}
     public String getPaisNombre(){return paisNombre;} public void setPaisNombre(String v){paisNombre=v;}
 }

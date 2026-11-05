@@ -11,12 +11,12 @@ INSERT INTO rol (codigo_rol, nombre) VALUES
   ('NETWORK', 'Operador de red'),
   ('MAINTENANCE', 'Coordinador de mantenimiento'),
   ('SUPERVISOR', 'Supervisor');
-INSERT INTO usuario (codigo_usuario, nombre_completo, correo, hash_contrasena, telefono, id_rol, id_pais, estado, fecha_ingreso, fecha_primera_activacion, ultimo_acceso) VALUES
-  ('USR-001', 'Rosales, Alonso', 'arosales@oceanlink.pe', 'NO_VALIDO_DEMO', '+51 987 420 118', 1, 1, 1, '2024-03-12 00:00:00', '2024-03-12 00:00:00', '2026-09-13 13:42:00'),
-  ('USR-002', 'Ávalos, Kevin', 'kavalos@oceanlink.pe', 'NO_VALIDO_DEMO', '+51 945 771 203', 4, 1, 1, '2025-01-08 00:00:00', '2025-01-08 00:00:00', '2026-09-13 12:18:00'),
-  ('USR-003', 'Aguilar, Matías', 'maguilar@oceanlink.pe', 'NO_VALIDO_DEMO', '+51 932 608 451', 2, 1, 1, '2023-07-17 00:00:00', '2023-07-17 00:00:00', '2026-08-29 17:06:00'),
-  ('USR-004', 'Leon, Axel', 'aleon@oceanlink.pe', 'NO_VALIDO_DEMO', '+51 944 212 876', 5, 1, 1, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-09-18 16:05:00'),
-  ('USR-005', 'Silvera, Ronal', 'rsilvera@oceanlink.pe', 'NO_VALIDO_DEMO', '+51 966 308 541', 3, 1, 1, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-09-18 15:31:00');
+INSERT INTO usuario (codigo_usuario, nombre_completo, correo, hash_contrasena, telefono, telefono_region, id_rol, id_pais, estado, fecha_ingreso, fecha_primera_activacion, ultimo_acceso) VALUES
+  ('USR-0001', 'Rosales, Alonso', 'arosales@oceanlink.pe', '650006dc2054be32ac111ad91609fd4db2173208b05a0330c0f0f4008ca3a88e', '+51 987 420 118', 'PE', 1, 1, 1, '2024-03-12 00:00:00', '2024-03-12 00:00:00', '2026-09-13 13:42:00'),
+  ('USR-0002', 'Ávalos, Kevin', 'kavalos@oceanlink.pe', '650006dc2054be32ac111ad91609fd4db2173208b05a0330c0f0f4008ca3a88e', '+51 945 771 203', 'PE', 4, 1, 1, '2025-01-08 00:00:00', '2025-01-08 00:00:00', '2026-09-13 12:18:00'),
+  ('USR-0003', 'Aguilar, Matías', 'maguilar@oceanlink.pe', '650006dc2054be32ac111ad91609fd4db2173208b05a0330c0f0f4008ca3a88e', '+51 932 608 451', 'PE', 2, 1, 1, '2023-07-17 00:00:00', '2023-07-17 00:00:00', '2026-08-29 17:06:00'),
+  ('USR-0004', 'Leon, Axel', 'aleon@oceanlink.pe', '650006dc2054be32ac111ad91609fd4db2173208b05a0330c0f0f4008ca3a88e', '+51 944 212 876', 'PE', 5, 1, 1, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-09-18 16:05:00'),
+  ('USR-0005', 'Silvera, Ronal', 'rsilvera@oceanlink.pe', '650006dc2054be32ac111ad91609fd4db2173208b05a0330c0f0f4008ca3a88e', '+51 966 308 541', 'PE', 3, 1, 1, '2026-01-01 00:00:00', '2026-01-01 00:00:00', '2026-09-18 15:31:00');
 INSERT INTO estacion (codigo_estacion, nombre, ubicacion, id_pais, capacidad_energia_kw, estado, condicion_operativa, fecha_registro) VALUES
   ('PE-0001', 'Lurín', 'Lima, Perú', 1, 500.0, 1, 'OPERATIVA', '2020-01-15 00:00:00'),
   ('CL-0002', 'Valparaíso', 'Valparaíso, Chile', 2, 520.0, 1, 'OPERATIVA', '2020-03-22 00:00:00'),
@@ -186,6 +186,3 @@ INSERT INTO historial_capacidad_segmento (id_segmento, fecha, capacidad_total_tb
   (6, '2026-09-20 12:00:00', 4, 0, 0);
 INSERT INTO reporte_generado (codigo_reporte, tipo, id_segmento, fecha_inicio, fecha_fin, generado_en, generado_por) VALUES
   ('RPT-001', 'CAPACIDAD_UTILIZACION', NULL, '2026-08-20 00:00:00', '2026-09-20 23:59:59', '2026-09-21 09:00:00', 4);
-
-
-INSERT INTO pais (codigo_pais,nombre) VALUES ('PE','Perú'),('CL','Chile'),('CO','Colombia'),('PA','Panamá') ON DUPLICATE KEY UPDATE nombre=VALUES(nombre);

@@ -8,19 +8,34 @@ public final class Pantallas {
     private Pantallas(){}
     public static void perfil(HttpServletRequest r){
         r.setAttribute("paisesTelefono",Paises.TODOS.stream().filter(p->!p.prefijo().isEmpty()).toList());
-        String area=r.getParameter("area");
-        if(area!=null&&Set.of("admin","cp","no","mc","sup").contains(area))r.getSession().setAttribute("areaDemo",area);
-        if("sup".equals(r.getParameter("menu")))r.getSession().setAttribute("areaDemo","sup");
-        if("sup".equals(r.getSession().getAttribute("areaDemo"))) {r.setAttribute("menu","sup");r.setAttribute("rol","Supervisor");}
-        String rol=Objects.toString(r.getAttribute("rol"),"Administrador");
-        try(Connection c=Conexion.abrir();PreparedStatement ps=c.prepareStatement("SELECT u.id_usuario FROM usuario u JOIN rol ro ON ro.id_rol=u.id_rol WHERE ro.nombre=? AND u.estado=1 ORDER BY u.id_usuario LIMIT 1")){
-            ps.setString(1,rol);try(ResultSet rs=ps.executeQuery()){if(rs.next()){Usuario u=new UsuarioDAO().buscar(rs.getLong(1));r.setAttribute("perfil",u);r.getSession().setAttribute("perfilDemoId",u.getId());}}
-        }catch(SQLException ex){r.getServletContext().log("No se pudo cargar el perfil de demostración",ex);}
+        HttpSession session = r.getSession(false);
+        if (session == null || session.getAttribute("usuarioId") == null) return;
+        String codigo = Objects.toString(session.getAttribute("rolCodigo"), "");
+        String area = switch (codigo) {
+            case "ADMIN" -> "admin";
+            case "CAPACITY" -> "cp";
+            case "NETWORK" -> "no";
+            case "MAINTENANCE" -> "mc";
+            case "SUPERVISOR" -> "sup";
+            default -> "";
+        };
+        r.setAttribute("menu", area);
+        r.setAttribute("rol", session.getAttribute("rolNombre"));
+        r.setAttribute("perfil", new Usuario());
+        Usuario perfil = new Usuario();
+        perfil.setId((Long) session.getAttribute("usuarioId"));
+        perfil.setNombre(Objects.toString(session.getAttribute("usuarioNombre"), ""));
+        perfil.setCorreo(Objects.toString(session.getAttribute("usuarioCorreo"), ""));
+        r.setAttribute("perfil", perfil);
     }
     public static String preparar(HttpServletRequest r,String vista,List<String[]> capacidad)throws SQLException{
-        String area=r.getParameter("area");if(area!=null&&Set.of("admin","cp","no","mc","sup").contains(area))r.getSession().setAttribute("areaDemo",area);
+        HttpSession session = r.getSession(false);
+        String role = session == null ? "" : Objects.toString(session.getAttribute("rolCodigo"), "");
+        String area = switch (role) { case "ADMIN" -> "admin"; case "CAPACITY" -> "cp"; case "NETWORK" -> "no"; case "MAINTENANCE" -> "mc"; case "SUPERVISOR" -> "sup"; default -> ""; };
+        r.setAttribute("menu", area);
+        r.setAttribute("rol", session == null ? "" : session.getAttribute("rolNombre"));
         ResumenPantallas.cargar(r,vista,capacidad);
-        boolean sup="sup".equals(r.getParameter("menu"))||"sup".equals(r.getSession().getAttribute("areaDemo"));
+        boolean sup="SUPERVISOR".equals(role);
         if(sup){r.setAttribute("menu","sup");r.setAttribute("rol","Supervisor");}
         if(vista.equals("general")&&!sup){
             r.setAttribute("metricas",DetalleDAO.filas("SELECT 'Usuarios activos',COUNT(*) FROM usuario WHERE estado=1 UNION ALL SELECT 'Estaciones registradas',COUNT(*) FROM estacion UNION ALL SELECT 'Segmentos operativos',COUNT(*) FROM segmento WHERE estado=1 AND condicion_operativa='OPERATIVO' UNION ALL SELECT 'Incidencias activas',COUNT(*) FROM incidencia WHERE fase NOT IN ('CERRADA','RESTAURADA')"));

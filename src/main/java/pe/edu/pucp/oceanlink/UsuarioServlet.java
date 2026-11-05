@@ -31,7 +31,15 @@ public class UsuarioServlet extends HttpServlet {
             if("borrar".equals(accion))dao.eliminar(id);
             else{Usuario e=new Usuario();e.setId(id);if(id>0){Usuario anterior=dao.buscar(id);if(anterior==null){s.sendError(404);return;}e.setCodigo(anterior.getCodigo());}
                 String apellidos=Entrada.texto(r,"apellidos",100,true),nombres=Entrada.texto(r,"nombres",57,true);Paises.validarNombre(apellidos,"apellidos");Paises.validarNombre(nombres,"nombres");if(apellidos.contains(",")||nombres.contains(","))throw new IllegalArgumentException("Escribe los apellidos y nombres en sus campos, sin comas.");e.setNombre(apellidos+", "+nombres);e.setCorreo(id==0?null:dao.buscar(id).getCorreo());e.setTelefono(Entrada.texto(r,"telefono",30,false));e.setRolId(Entrada.id(r,"rolId"));e.setPaisId(Entrada.id(r,"paisId"));e.setEstado(id==0?0:dao.buscar(id).getEstado());if(id==0){java.time.LocalDate hoy=java.time.LocalDate.now(java.time.ZoneId.of("America/Lima"));String fecha=Entrada.texto(r,"fechaIngreso",10,false);java.time.LocalDate ingreso;try{ingreso=fecha.isEmpty()?hoy:java.time.LocalDate.parse(fecha);}catch(java.time.format.DateTimeParseException ex){throw new IllegalArgumentException("Selecciona una fecha de ingreso válida.");}if(ingreso.isAfter(hoy))throw new IllegalArgumentException("La fecha de ingreso no puede ser posterior a hoy.");e.setFechaIngreso(ingreso.atStartOfDay());}else e.setFechaIngreso(dao.buscar(id).getFechaIngreso());
-                e.setTelefonoRegion(Entrada.texto(r,"telefonoRegion",2,true));e.setTelefono(Telefono.normalizarRegion(e.getTelefono(),e.getTelefonoRegion()));dao.guardar(e);
+                e.setTelefonoRegion(Entrada.texto(r,"telefonoRegion",2,true));e.setTelefono(Telefono.normalizarRegion(e.getTelefono(),e.getTelefonoRegion()));
+                String contrasenaTemporal = "";
+                if (id == 0) {
+                    contrasenaTemporal = Entrada.texto(r, "contrasenaTemporal", 100, true);
+                    if (contrasenaTemporal.length() < 8)
+                        throw new IllegalArgumentException("La contraseña temporal debe tener al menos 8 caracteres.");
+                    e.setEstado(1);
+                }
+                dao.guardar(e, contrasenaTemporal);
             }
             s.sendRedirect(r.getContextPath()+"/UsuarioServlet?ok=1");
         }catch(SQLException|IllegalArgumentException ex){
