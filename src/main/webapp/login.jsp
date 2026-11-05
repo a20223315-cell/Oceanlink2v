@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html><html lang="es"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -7,9 +8,9 @@
 <link href="css/base.css?v=20261028-edicion-error" rel="stylesheet">
 <link href="css/theme.css?v=20261028-edicion-error" rel="stylesheet">
 <link href="css/final.css?v=20261028-edicion-error" rel="stylesheet">
-<link href="css/login-hero.css?v=20261028-edicion-error" rel="stylesheet">
+<link href="css/login-hero.css?v=20261105-mensaje-login" rel="stylesheet">
 <link href="css/vendor/fontawesome.css?v=20261028-edicion-error" rel="stylesheet">
-</head>
+<style>#login-server-error[hidden]{display:none}</style></head>
 <body class="login-page olp-page">
   <main class="olp-layout" aria-label="Acceso a OceanLink">
     <section class="olp-brand" aria-label="OceanLink">
@@ -43,16 +44,16 @@
           <img class="olp-mobile-logo" src="assets/oceanlink-logo.svg" alt="OceanLink">
           <span class="olp-access-kicker">Acceso al sistema</span>
           <h2>Bienvenido</h2>
-          <p>Selecciona tu área para explorar OceanLink. El acceso de esta entrega es de demostración.</p>
+          <p>Ingresa con tu correo o código de usuario y contraseña para acceder según los permisos de tu rol.</p>
         </header>
 
-        <form class="login-form olp-form" method="post" novalidate="">
+        <form class="login-form olp-form" method="post" action="LoginServlet" novalidate="">
           <div class="olp-field">
             <label for="usuario">Usuario</label>
             <div class="login-input-shell olp-input-shell" data-login-field="usuario">
               <div class="olp-control">
                 <span class="olp-control-icon" aria-hidden="true"><i class="fa-regular fa-user"></i></span>
-                <input id="usuario" name="usuario" placeholder="Ingrese su usuario" required="" type="text" autocomplete="username" aria-describedby="usuario-error">
+                <input id="usuario" name="usuario" placeholder="Ingrese su correo o código de usuario" required="" type="text" autocomplete="username" aria-describedby="usuario-error">
               <span class="login-inline-error" id="usuario-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i> Ingrese su usuario.</span>
               </div>
             </div>
@@ -70,44 +71,30 @@
             </div>
           </div>
 
-          <div class="olp-action-label"><span>Ingresar</span></div>
-
-          <div class="olp-actions" aria-label="Opciones de ingreso">
-            <button class="olp-role-button olp-role-button--admin role-login-entry" type="button" data-login-target="dashboard.html">
-              <span class="olp-role-icon"><i class="fa-solid fa-user-shield" aria-hidden="true"></i></span>
-              <span class="olp-role-copy"><strong>Administrador</strong><small>Gestión e infraestructura</small></span>
-              <i class="fa-solid fa-arrow-right olp-role-arrow" aria-hidden="true"></i>
-            </button>
-            <button class="olp-role-button olp-role-button--capacity role-login-entry" type="button" data-login-target="cp_capacity.html">
-              <span class="olp-role-icon"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></span>
-              <span class="olp-role-copy"><strong>Planificador de capacidad</strong><small>Capacidad y servicios</small></span>
-              <i class="fa-solid fa-arrow-right olp-role-arrow" aria-hidden="true"></i>
-            </button>
-            <button class="olp-role-button olp-role-button--network role-login-entry" type="button" data-login-target="no_network.html">
-              <span class="olp-role-icon"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i></span>
-              <span class="olp-role-copy"><strong>Operador de red</strong><small>Red e incidencias</small></span>
-              <i class="fa-solid fa-arrow-right olp-role-arrow" aria-hidden="true"></i>
-            </button>
-            <button class="olp-role-button olp-role-button--maintenance role-login-entry" type="button" data-login-target="mc_maintenance.html">
-              <span class="olp-role-icon"><i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i></span>
-              <span class="olp-role-copy"><strong>Coordinador de mantenimiento</strong><small>Intervenciones e historial</small></span>
-              <i class="fa-solid fa-arrow-right olp-role-arrow" aria-hidden="true"></i>
-            </button>
-            <button class="olp-role-button olp-role-button--supervisor olp-role-button--wide role-login-entry" type="button" data-login-target="sup_dashboard.html">
-              <span class="olp-role-icon"><i class="fa-solid fa-binoculars" aria-hidden="true"></i></span>
-              <span class="olp-role-copy"><strong>Supervisor</strong><small>Indicadores, seguimiento y reportes</small></span>
+          <div class="olp-action-label"><span>Acceso al sistema</span></div>
+          <div class="olp-actions" aria-label="Ingreso al sistema">
+            <button class="olp-role-button olp-role-button--admin olp-role-button--wide" type="submit">
+              <span class="olp-role-icon"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i></span>
+              <span class="olp-role-copy"><strong>Iniciar sesión</strong><small>El sistema identificará tu rol automáticamente</small></span>
               <i class="fa-solid fa-arrow-right olp-role-arrow" aria-hidden="true"></i>
             </button>
           </div>
+          <%
+            String mensajeLogin = (String) session.getAttribute("mensajeLogin");
+            if (mensajeLogin != null) {
+                session.removeAttribute("mensajeLogin");
+          %>
+          <p id="login-server-error" class="login-inline-error" role="alert"><%= mensajeLogin %></p>
+          <% } %>
         </form>
 
         <footer class="olp-access-foot">
-          <span><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Uso exclusivo para personal autorizado.</span>
+          <span><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Acceso protegido mediante cuenta y contraseña.</span>
           <span>¿Problemas de acceso? Comunícate con el administrador.</span>
         </footer>
       </div>
     </section>
   </main>
-<script defer="" src="js/login-acceso.js?v=20261028-edicion-error"></script>
+<script defer="" src="js/login-acceso.js?v=20261104-sesiones-roles"></script>
 
 </body></html>

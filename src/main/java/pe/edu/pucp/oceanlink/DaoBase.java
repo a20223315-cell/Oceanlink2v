@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/** Clase base para centralizar la conexión común de los DAO. */
+
 public abstract class DaoBase {
     protected static Connection obtenerConexion() throws SQLException {
         String url = System.getenv().getOrDefault(

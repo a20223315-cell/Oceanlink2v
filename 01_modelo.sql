@@ -20,7 +20,7 @@ CREATE TABLE usuario (
   correo VARCHAR(254) NOT NULL UNIQUE,
   hash_contrasena VARCHAR(255) NOT NULL,
   telefono VARCHAR(30) NOT NULL CHECK (CHAR_LENGTH(TRIM(telefono)) > 0),
-  telefono_region CHAR(2) NULL,
+  telefono_region CHAR(2),
   id_rol BIGINT UNSIGNED NOT NULL,
   id_pais BIGINT UNSIGNED NOT NULL,
   estado TINYINT NOT NULL DEFAULT 1,

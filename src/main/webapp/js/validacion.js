@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.addEventListener('change',event=>{if(!focusingError&&event.target.matches('input,select,textarea'))clearRelated(event.target);});
  document.addEventListener('invalid',event=>{if(event.target.closest('.login-form'))return;event.preventDefault();const text=message(event.target);if(text)show(event.target,text);},true);
  document.addEventListener('reset',event=>{for(const field of [...errors.keys()])if(field.form===event.target)clear(field);});
- // Clear before browser selection/caret movement, not only after a value changes.
+ 
  const resumeEditing=event=>{
   if(focusingError||!(event.target instanceof Element))return;
   if(event.type==='keydown'&&(event.key==='Tab'||event.key==='Escape'||['Shift','Control','Alt','Meta'].includes(event.key)))return;
