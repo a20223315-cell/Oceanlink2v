@@ -75,7 +75,7 @@ body.olp-page .login-input-shell.has-error input{caret-color:transparent!importa
 body.olp-page .login-input-shell.has-error input::selection{color:transparent!important;background:transparent!important}
 
 
-/* Mensaje general devuelto por LoginServlet */
+
 #login-server-error {
   display: block !important;
   position: static !important;
