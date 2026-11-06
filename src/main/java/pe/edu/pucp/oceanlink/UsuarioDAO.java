@@ -63,6 +63,16 @@ public class UsuarioDAO extends DaoBase {
         guardar(e, null);
     }
 
+    public boolean actualizarCelular(long id, String telefono, String region) throws SQLException {
+        String sql = "UPDATE usuario SET telefono=?, telefono_region=? WHERE id_usuario=? AND estado=1";
+        try (Connection c = obtenerConexion(); PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, telefono);
+            ps.setString(2, region);
+            ps.setLong(3, id);
+            return ps.executeUpdate() == 1;
+        }
+    }
+
     public void eliminar(long id)throws SQLException{try(Connection c=obtenerConexion()){c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);c.setAutoCommit(false);try{bloquear(c,id);try(PreparedStatement ps=c.prepareStatement("UPDATE usuario SET estado=0 WHERE id_usuario=?")){ps.setLong(1,id);ps.executeUpdate();}c.commit();}catch(SQLException|RuntimeException e){c.rollback();throw e;}}}
 
     public Usuario autenticar(String identificador, String contrasena) throws SQLException {
