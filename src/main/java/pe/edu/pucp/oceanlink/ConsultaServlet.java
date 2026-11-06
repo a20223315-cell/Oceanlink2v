@@ -9,6 +9,15 @@ import java.util.*;
 @WebServlet("/ConsultaServlet")
 public class ConsultaServlet extends HttpServlet {
     protected void doGet(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{
+        HttpSession sesion = r.getSession(false);
+        s.setHeader("Cache-Control", "no-store");
+        s.setHeader("Pragma", "no-cache");
+        s.setDateHeader("Expires", 0);
+        if (sesion == null || !(sesion.getAttribute("usuarioSesion") instanceof Usuario usuarioAutenticado) || usuarioAutenticado.getId() <= 0) {
+            s.sendRedirect(r.getContextPath() + "/LoginServlet");
+            return;
+        }
+
         String vista=Objects.toString(r.getParameter("vista"),"general");
         r.setAttribute("titulo",switch(vista){case "capacidad"->"Capacidad por segmento";case "red"->"Estado de la red";case "historialCapacidad"->"Historial de utilización";case "afectados"->"Servicios y clientes afectados";default->"Panel general";});
         String menu="sup".equals(r.getParameter("menu"))?"sup":vista.equals("red")?"no":vista.equals("general")?"admin":"cp";
