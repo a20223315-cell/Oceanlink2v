@@ -9,7 +9,7 @@ public final class Pantallas {
     public static void perfil(HttpServletRequest r){
         r.setAttribute("paisesTelefono",Paises.TODOS.stream().filter(p->!p.prefijo().isEmpty()).toList());
         HttpSession session = r.getSession(false);
-        if (session == null || session.getAttribute("usuarioId") == null) return;
+        if (session == null || !(session.getAttribute("usuarioSesion") instanceof Usuario usuario) || usuario.getId() <= 0) return;
         String codigo = Objects.toString(session.getAttribute("rolCodigo"), "");
         String area = switch (codigo) {
             case "ADMIN" -> "admin";
@@ -21,12 +21,12 @@ public final class Pantallas {
         };
         r.setAttribute("menu", area);
         r.setAttribute("rol", session.getAttribute("rolNombre"));
-        r.setAttribute("perfil", new Usuario());
-        Usuario perfil = new Usuario();
-        perfil.setId((Long) session.getAttribute("usuarioId"));
-        perfil.setNombre(Objects.toString(session.getAttribute("usuarioNombre"), ""));
-        perfil.setCorreo(Objects.toString(session.getAttribute("usuarioCorreo"), ""));
-        r.setAttribute("perfil", perfil);
+        try {
+            r.setAttribute("perfil", new UsuarioDAO().buscar(usuario.getId()));
+        } catch (SQLException ex) {
+            r.getServletContext().log("No se pudo consultar el perfil", ex);
+            r.setAttribute("errorPerfil", "No se pudo cargar tu perfil. Inténtalo nuevamente.");
+        }
     }
     public static String preparar(HttpServletRequest r,String vista,List<String[]> capacidad)throws SQLException{
         HttpSession session = r.getSession(false);
