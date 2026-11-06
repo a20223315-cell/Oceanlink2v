@@ -27,8 +27,8 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
 
-        if (session != null && session.getAttribute("usuarioSesion") != null) {
-            Usuario usuario = (Usuario) session.getAttribute("usuarioSesion");
+        if (session != null && session.getAttribute("usuarioSesion") instanceof Usuario usuario
+                && usuario.getId() > 0) {
             String destino = DESTINOS.getOrDefault(usuario.getRolCodigo(), "login.jsp");
             response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/" + destino));
             return;

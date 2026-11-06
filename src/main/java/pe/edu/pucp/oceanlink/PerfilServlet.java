@@ -6,6 +6,15 @@ import java.sql.*;
 @WebServlet("/PerfilServlet")
 public class PerfilServlet extends HttpServlet{
  protected void doPost(HttpServletRequest r,HttpServletResponse s)throws IOException{
+        HttpSession sesion = r.getSession(false);
+        s.setHeader("Cache-Control", "no-store");
+        s.setHeader("Pragma", "no-cache");
+        s.setDateHeader("Expires", 0);
+        if (sesion == null || !(sesion.getAttribute("usuarioSesion") instanceof Usuario usuarioAutenticado) || usuarioAutenticado.getId() <= 0) {
+            s.sendRedirect(r.getContextPath() + "/LoginServlet");
+            return;
+        }
+
   r.setCharacterEncoding("UTF-8");s.setContentType("text/plain;charset=UTF-8");
   if(r.getSession(false)==null||!(r.getSession().getAttribute("perfilDemoId") instanceof Long id)){s.sendError(400);return;}
   try{String telefono=Entrada.texto(r,"telefono",30,false);String region=Entrada.texto(r,"telefonoRegion",2,true);telefono=Telefono.normalizarRegion(telefono,region);

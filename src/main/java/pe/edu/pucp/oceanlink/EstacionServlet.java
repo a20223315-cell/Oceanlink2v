@@ -10,7 +10,16 @@ import java.util.*;
 public class EstacionServlet extends HttpServlet {
     private final EstacionDAO dao=new EstacionDAO();
     private void preparar(HttpServletRequest r){r.setAttribute("titulo","Estaciones de aterrizaje");r.setAttribute("modulo","Estacion");r.setAttribute("menu","admin");r.setAttribute("rol","Administrador");r.setAttribute("etiquetas",Etiquetas.todas());r.setAttribute("estados",List.of("OPERATIVA","EN_MANTENIMIENTO","FUERA_SERVICIO"));}
-    protected void doGet(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{preparar(r);String accion=Objects.toString(r.getParameter("action"),"lista");try{
+    protected void doGet(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{
+        HttpSession sesion = r.getSession(false);
+        s.setHeader("Cache-Control", "no-store");
+        s.setHeader("Pragma", "no-cache");
+        s.setDateHeader("Expires", 0);
+        if (sesion == null || !(sesion.getAttribute("usuarioSesion") instanceof Usuario usuarioAutenticado) || usuarioAutenticado.getId() <= 0) {
+            s.sendRedirect(r.getContextPath() + "/LoginServlet");
+            return;
+        }
+        preparar(r);String accion=Objects.toString(r.getParameter("action"),"lista");try{
         switch(accion){
             case "lista":
                 String q=Entrada.texto(r,"q",160,false),estado=Entrada.texto(r,"estado",40,false);
@@ -26,7 +35,16 @@ public class EstacionServlet extends HttpServlet {
             default:s.sendError(400);
         }
     }catch(IllegalArgumentException ex){s.sendError(400,ex.getMessage());}catch(SQLException ex){log("Error consultando Estacion",ex);r.setAttribute("error","No se pudo consultar la información. Revisa la conexión a la base de datos.");r.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(r,s);}}
-    protected void doPost(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{r.setCharacterEncoding("UTF-8");preparar(r);String accion=r.getParameter("action");
+    protected void doPost(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{
+        HttpSession sesion = r.getSession(false);
+        s.setHeader("Cache-Control", "no-store");
+        s.setHeader("Pragma", "no-cache");
+        s.setDateHeader("Expires", 0);
+        if (sesion == null || !(sesion.getAttribute("usuarioSesion") instanceof Usuario usuarioAutenticado) || usuarioAutenticado.getId() <= 0) {
+            s.sendRedirect(r.getContextPath() + "/LoginServlet");
+            return;
+        }
+        r.setCharacterEncoding("UTF-8");preparar(r);String accion=r.getParameter("action");
         if(!Set.of("crear","actualizar","borrar").contains(Objects.toString(accion,""))){s.sendError(400);return;}
         long id=0;
         try{

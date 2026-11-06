@@ -3,8 +3,26 @@ import jakarta.servlet.*;import jakarta.servlet.annotation.WebServlet;import jak
 import java.sql.*;import java.io.IOException;import java.util.*;import java.time.*;
 @WebServlet("/ReporteServlet")
 public class ReporteServlet extends HttpServlet{
- protected void doGet(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{mostrar(r,s,false);}
- protected void doPost(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{mostrar(r,s,true);}
+ protected void doGet(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{
+        HttpSession sesion = r.getSession(false);
+        s.setHeader("Cache-Control", "no-store");
+        s.setHeader("Pragma", "no-cache");
+        s.setDateHeader("Expires", 0);
+        if (sesion == null || !(sesion.getAttribute("usuarioSesion") instanceof Usuario usuarioAutenticado) || usuarioAutenticado.getId() <= 0) {
+            s.sendRedirect(r.getContextPath() + "/LoginServlet");
+            return;
+        }
+        mostrar(r,s,false);}
+ protected void doPost(HttpServletRequest r,HttpServletResponse s)throws ServletException,IOException{
+        HttpSession sesion = r.getSession(false);
+        s.setHeader("Cache-Control", "no-store");
+        s.setHeader("Pragma", "no-cache");
+        s.setDateHeader("Expires", 0);
+        if (sesion == null || !(sesion.getAttribute("usuarioSesion") instanceof Usuario usuarioAutenticado) || usuarioAutenticado.getId() <= 0) {
+            s.sendRedirect(r.getContextPath() + "/LoginServlet");
+            return;
+        }
+        mostrar(r,s,true);}
  private void mostrar(HttpServletRequest r,HttpServletResponse s,boolean guardar)throws ServletException,IOException{
   r.setAttribute("menu","sup");r.setAttribute("rol","Supervisor");r.setAttribute("titulo","Reporte operativo");r.setAttribute("etiquetas",Etiquetas.todas());Pantallas.perfil(r);
   try{
